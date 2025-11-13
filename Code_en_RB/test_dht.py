@@ -4,7 +4,7 @@ from grovepi import dht
 
 PIN = 4   # cambia al puerto digital donde tengas el sensor (ej. 2,3,4)
 # sensor_type: 0 ó 1 — algunos firmwares usan 0=DHT11,1=DHT22; si uno no funciona prueba el otro.
-SENSOR_TYPES = [0, 1]
+SENSOR_TYPES = [0, 1, 2, 3]
 
 def safe_read(pin, sensor_type):
     try:

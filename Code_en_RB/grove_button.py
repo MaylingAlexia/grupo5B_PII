@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-
-# GrovePi LED blink Example for the Grove LED Socket (http://www.seeedstudio.com/wiki/Grove_-_LED_Socket_Kit)
+#
+# GrovePi Example for using the Grove Button (http://www.seeedstudio.com/wiki/Grove_-_Button)
 #
 # The GrovePi connects the Raspberry Pi and Grove sensors.  You can learn more about GrovePi here:  http://www.dexterindustries.com/GrovePi
 #
@@ -32,33 +32,19 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 '''
-
 import time
-from grovepi import *
+import grovepi
 
-# Connect the Grove LED to digital port D4
-led = 2
+# Connect the Grove Button to digital port D3
+# SIG,NC,VCC,GND
+button = 4 
 
-pinMode(led,"OUTPUT")
-time.sleep(1)
-
-print ("This example will blink a Grove LED connected to the GrovePi+ on the port D{}.\nIf you're having trouble seeing the LED blink, be sure to check the LED connection and the port number.\nYou may also try reversing the direction of the LED on the sensor.".format(led))
-print (" ")
-print ("Connect the LED to the D{} port !".format(led))
+grovepi.pinMode(button,"INPUT")
 
 while True:
     try:
-        #Blink the LED
-        digitalWrite(led,1)		# Send HIGH to switch on LED
-        print ("LED ON!")
-        time.sleep(1)
+        print(grovepi.digitalRead(button))
+        time.sleep(.5)
 
-        digitalWrite(led,0)		# Send LOW to switch off LED
-        print ("LED OFF!")
-        time.sleep(1)
-
-    except KeyboardInterrupt:	# Turn LED off before stopping
-        digitalWrite(led,0)
-        break
-    except IOError:				# Print "Error" if communication error encountered
+    except IOError:
         print ("Error")

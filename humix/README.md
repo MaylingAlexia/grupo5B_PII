@@ -1,27 +1,44 @@
-# Humix
+# 🧩 Indicaciones
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 15.
+1. **Instalar Volta (si no lo tienen):**  
+   - Si tienen Chocolatey (opción más sencilla):  
+     ```bash
+     choco install volta -y
+     ```
+   - También pueden ver otras opciones en [https://volta.sh](https://volta.sh)
 
-## Development server
+2. **Clonar el repositorio y entrar al proyecto:**
+   ```bash
+   git clone https://github.com/sebastianeyraud/TecnoWebSlytherin.git
+   cd TecnoWebSlytherin
+   ```
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+3. Instalar dependencias
+    ```bash
+    npm install
+    ```
 
-## Code scaffolding
+4. Y ejectuar cuando quieran
+    ```bash
+    npm start
+    ```
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+⚠️ Importante
 
-## Build
+Asegúrense de estar dentro de la carpeta del proyecto antes de usar ng.
+De otra forma, su sistema podría tomar el Angular global que tengan instalado y causar errores.
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+En este proyecto se usa Angular CLI 15 local, ya incluido en node_modules.
 
-## Running unit tests
+Si necesitan usar comandos como generar componentes, utilicen el ng local.
+Con:
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+npx ng version
 
-## Running end-to-end tests
+o
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+.\node_modules\\.bin\ng version
 
-## Further help
+(el version puede ser cualquier cosa)
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+---

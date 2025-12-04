@@ -1,1 +1,77 @@
 /* You can add global styles to this file, and also import other style files */
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: #93A3F3;
+  height: 100%;
+  padding: 0;
+}
+
+.waves-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+/*<div class="wave wave-1"></div>
+    <div class="wave wave-2"></div>
+    <div class="wave wave-3"></div>
+    <div class="wave wave-4"></div>
+  </div>*/
+
+.wave {
+  position: absolute;
+  width: 100%;
+  height: 180vh;
+  background-size: cover;
+  background-repeat: no-repeat;
+  opacity: 1;
+}
+
+.wave-1 {
+  bottom: 0;
+  z-index: 1;
+  background-image: url("data:image/svg+xml;utf8,\
+  <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'>\
+    <path fill='%2393CEF3' d='M0 200l0-21.3 C96 170 10 220 388 170.7 c96 .3 192 42.3 288 58.6 96 16.7 192 6.7 288-32 96-57.3 192-121.3 288-148 96-46.7 192-46.7 240-46.7 v320H0z'></path>\
+  </svg>");
+}
+
+.wave-2 {
+  bottom: -100px; /* MÁS ABAJO */
+  z-index: 2;
+  background-image: url("data:image/svg+xml;utf8,\
+  <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'>\
+    <path fill='%2393EDF3' d='M0 200l0-21.3 C96 170 10 220 388 170.7 c96 .3 192 42.3 288 58.6 96 16.7 192 6.7 288-32 96-57.3 192-121.3 288-148 96-46.7 192-46.7 240-46.7 v320H0z'></path>\
+  </svg>");
+}
+
+.wave-3 {
+  bottom: -200px; /* MÁS ABAJO */
+  z-index: 3;
+  background-image: url("data:image/svg+xml;utf8,\
+  <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'>\
+    <path fill='%2365D7EB' d='M0 200l0-21.3 C96 170 10 220 388 170.7 c96 .3 192 42.3 288 58.6 96 16.7 192 6.7 288-32 96-57.3 192-121.3 288-148 96-46.7 192-46.7 240-46.7 v320H0z'></path>\
+  </svg>");
+}
+
+.wave-4 {
+  bottom: -300px; /* MÁS ABAJO */
+  z-index: 4;
+  background-image: url("data:image/svg+xml;utf8,\
+  <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'>\
+    <path fill='%2365D7EB' d='M0 200l0-21.3 C96 170 10 220 388 170.7 c96 .3 192 42.3 288 58.6 96 16.7 192 6.7 288-32 96-57.3 192-121.3 288-148 96-46.7 192-46.7 240-46.7 v320H0z'></path>\
+  </svg>");
+}
+
+.wave-5 {
+  bottom: -400px; /* MÁS ABAJO */
+  z-index: 5;
+  background-image: url("data:image/svg+xml;utf8,\
+  <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'>\
+    <path fill='%234ECDC4' d='M0 200l0-21.3 C96 170 10 220 388 170.7 c96 .3 192 42.3 288 58.6 96 16.7 192 6.7 288-32 96-57.3 192-121.3 288-148 96-46.7 192-46.7 240-46.7 v320H0z'></path>\
+  </svg>");
+}

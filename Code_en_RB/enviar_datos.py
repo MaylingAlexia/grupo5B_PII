@@ -3,7 +3,7 @@ import random
 import time
 
 # url = "http://192.168.71.103:5000/datos" Sin Bonjour (usar ip de computador con flask)
-url = "http://maycosa.local:5000/datos"
+url = "http://maycosa.local:5200/datos"
 
 
 while True:

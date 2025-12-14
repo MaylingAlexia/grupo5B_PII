@@ -1,1 +1,37 @@
-<p>monitoreo works!</p>
+<div class="page-container">
+  <section class="outer-rect">
+    <h1 class="outer-title">Monitoreo</h1>
+    <hr />
+
+    <div class="inner-rect">
+      <h2 class="inner-title">Niveles de humedad</h2>
+
+      <div class="cards-row">
+        <ul class="cards-row lista-niveles">
+          <li
+            class="elemento-nivel"
+            *ngFor="let nivel of niveles; let i = index"
+          >
+            Input {{ i + 1 }}: {{ nivel }}
+            <span class="estado-label">{{ estado }}</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="inner-rect">
+      <h2 class="inner-title">Niveles de salinidad</h2>
+
+      <div class="cards-row">
+        <ul class="cards-row lista-niveles">
+          <li
+            class="elemento-nivel"
+            *ngFor="let nivel of niveles; let i = index"
+          >
+            Input {{ i + 1 }}: {{ nivel }}
+            <span class="estado-label">{{ estado }}</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</div>

@@ -7,6 +7,31 @@ body {
   padding: 0;
 }
 
+.into {
+  position: relative;
+  z-index: 10; /* mayor que las waves */
+}
+
+app-root {
+  display: block;
+  height: 100%;
+}
+
+.layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  justify-content: center;   /* horizontal */
+  align-items: flex-start;   /* vertical, no estirar */
+}
+
+
+
 .waves-bg {
   position: fixed;
   top: 0;

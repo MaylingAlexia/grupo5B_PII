@@ -1,0 +1,15 @@
+.card {
+  position: relative;
+  z-index: 10;
+
+  width: 100%;
+  max-width: 900px; 
+
+  background-color: rgba(86, 69, 146, 0.85);
+  border-radius: 16px;
+
+  padding: 1rem;
+  margin: 2rem;
+
+  padding-bottom: 5rem; /* espacio para el nav */
+}

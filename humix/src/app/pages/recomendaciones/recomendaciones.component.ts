@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { IaService } from 'src/app/services/ia.service';
 
 @Component({
   selector: 'app-recomendaciones',
@@ -13,4 +14,15 @@ export class RecomendacionesComponent {
   labelsDos = ['Otro 1', 'Otro 2', 'Otro 3', 'Otro 4'];
   labelsTres = ['X', 'Y', 'Z'];
 
+  // chat.component.ts
+  mensaje = '';
+  respuesta = '';
+
+  constructor(private ia: IaService) {}
+
+  enviar() {
+    this.ia.pedir(this.mensaje).subscribe(res => {
+      this.respuesta = res.answer;
+    });
+  }
 }

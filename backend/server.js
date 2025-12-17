@@ -1,3 +1,30 @@
+// server.js (Node + Express)
+import express from 'express';
+import { Configuration, OpenAIApi } from 'openai';
+
+
+const configuration = new Configuration({
+  apiKey: process.env.OPENAI_API_KEY
+});
+const openai = new OpenAIApi(configuration);
+
+app.post('/api/ia', async (req, res) => {
+  try {
+    const { prompt } = req.body;
+    const response = await openai.createChatCompletion({
+      model: 'gpt-4',
+      messages: [{ role: 'user', content: prompt }]
+    });
+    const answer = response.data.choices[0].message?.content;
+    res.json({ answer });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.listen(3000, () => console.log('Servidor Node corriendo en 3000'));
+
+
 const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
@@ -224,3 +251,32 @@ app.get('/api/conductividad/maxHoy', (req, res) => {
     }
   );
 });
+
+// Devuelve todas las medidas de las últimas 24h
+app.get('/api/humedad/ultimas24h', (req, res) => {
+  db.all(
+    `SELECT * 
+     FROM humedad_log 
+     WHERE fecha >= datetime('now', '-24 hours')
+     ORDER BY fecha ASC`,
+    [],
+    (err, rows) => {
+      if (err) res.status(500).json({ error: err.message });
+      else res.json(rows);
+    }
+  );
+});
+
+app.get('/api/humedad/max48h', (req, res) => {
+  db.get(
+    `SELECT MAX(humedad) AS humedad 
+     FROM humedad_log 
+     WHERE fecha >= datetime('now', '-48 hours')`,
+    [],
+    (err, row) => {
+      if (err) res.status(500).json({ error: err.message });
+      else res.json(row);
+    }
+  );
+});
+

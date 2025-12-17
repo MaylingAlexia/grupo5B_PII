@@ -12,13 +12,10 @@
   </label>
 </div>
 
-<div>
-  <label>
-    <input
-      type="checkbox"
-      [(ngModel)]="deshumidificador"
-      (change)="toggleDeshumidificador()"
-    />
-    Deshumidificador
-  </label>
-</div>
+<label>
+  Deshumidificador
+  <input type="checkbox" [(ngModel)]="deshumidificador"
+         [disabled]="loading"
+         (change)="toggleDeshumidificador()">
+</label>
+

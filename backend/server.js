@@ -1,13 +1,24 @@
-// server.js (Node + Express)
+// server.js
 import express from 'express';
-import { Configuration, OpenAIApi } from 'openai';
+import cors from 'cors';
+import axios from 'axios';
+import OpenAI from 'openai';
+import db from './db.js'; // recuerda agregar .js
 
+const app = express();
+app.use(cors());
+app.use(express.json());
 
-const configuration = new Configuration({
+// Configuración OpenAI
+const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 });
-const openai = new OpenAIApi(configuration);
+// IP de tu Raspberry
+const PYTHON_API = 'http://172.21.84.91:5000';
 
+// --- RUTAS ---
+
+// IA
 app.post('/api/ia', async (req, res) => {
   try {
     const { prompt } = req.body;
@@ -22,54 +33,87 @@ app.post('/api/ia', async (req, res) => {
   }
 });
 
-app.listen(3000, () => console.log('Servidor Node corriendo en 3000'));
+// RUTA DE PRUEBA: inserta datos directamente en SQLite
+app.get('/api/test-insert', (req, res) => {
+  const humedad = { id: 1, hum: 53.0, temp: 25.2 };
+  const conductividad = 110;
 
-
-const express = require('express');
-const axios = require('axios');
-const cors = require('cors');
-
-const app = express();
-app.use(cors());
-app.use(express.json());
-const db = require('./db');
-
-
-// IP DE TU RASPBERRY
-const PYTHON_API = 'http://172.21.84.91:5000';
-
-// 1️⃣ Obtener estado desde Python
-app.get('/api/estado', async (req, res) => {
-  try {
-    const response = await axios.get(`${PYTHON_API}/estado`);
-    const data = response.data;
-
-    // ---- HUMEDAD ----
-    if (data.humedad) {
-      db.run(
-        `INSERT INTO humedad_log (humedad, temperatura)
-         VALUES (?, ?)`,
-        [data.humedad.hum, data.humedad.temp]
-      );
+  db.run(
+    `INSERT INTO humedad_log (sensor_id, humedad, temperatura)
+     VALUES (?, ?, ?)`,
+    [parseInt(humedad.id), humedad.hum, humedad.temp],
+    function(err) {
+      if (err) console.error('Error insertando humedad:', err.message);
+      else console.log('Humedad insertada con id', this.lastID);
     }
+  );
 
-    // ---- CONDUCTIVIDAD ----
-    if (data.conductividad) {
-      db.run(
-        `INSERT INTO conductividad_log (conductividad)
-         VALUES (?)`,
-        [data.conductividad]
-      );
+  db.run(
+    `INSERT INTO conductividad_log (conductividad)
+     VALUES (?)`,
+    [conductividad],
+    function(err) {
+      if (err) console.error('Error insertando conductividad:', err.message);
+      else console.log('Conductividad insertada con id', this.lastID);
     }
+  );
 
-    res.json(data);
-
-  } catch (error) {
-    res.status(500).json({ error: 'No se pudo conectar a Python' });
-  }
+  res.json({ ok: true, msg: 'Datos de prueba insertados' });
 });
 
-// 2️⃣ Enviar comando al deshumidificador
+
+// Obtener estado desde Python y guardar en DB
+app.get('/api/estado', async (req, res) => {
+  let data;
+
+  try {
+    // Intentamos obtener datos reales de Python
+    const response = await axios.get(`${PYTHON_API}/estado`, { timeout: 5000 });
+    data = response.data;
+    console.log('Datos reales de Python:', data);
+  } catch (err) {
+    // Si falla, usamos datos simulados
+    console.warn('No se pudo conectar a Python, usando datos simulados');
+    data = {
+      conductividad: 110,
+      humedad: { hum: 56.0, id: "1", temp: 25.2 },
+      deshumidificador: null
+    };
+  }
+
+  // Guardar humedad
+  if (data.humedad) {
+    db.run(
+      `INSERT INTO humedad_log (sensor_id, humedad, temperatura)
+       VALUES (?, ?, ?)`,
+      [parseInt(data.humedad.id), data.humedad.hum, data.humedad.temp],
+      function(err) {
+        if (err) console.error('Error insertando humedad:', err.message);
+        else console.log('Humedad insertada con id', this.lastID);
+      }
+    );
+  }
+
+  // Guardar conductividad
+  if (data.conductividad !== undefined) {
+    db.run(
+      `INSERT INTO conductividad_log (conductividad)
+       VALUES (?)`,
+      [data.conductividad],
+      function(err) {
+        if (err) console.error('Error insertando conductividad:', err.message);
+        else console.log('Conductividad insertada con id', this.lastID);
+      }
+    );
+  }
+
+  res.json(data);
+});
+
+
+
+
+// Comando deshumidificador
 app.post('/api/deshumidificador', async (req, res) => {
   const { accion } = req.body; // "on" | "off"
 
@@ -85,22 +129,14 @@ app.post('/api/deshumidificador', async (req, res) => {
   }
 });
 
-setInterval(evaluarHumedadAutomatica, 5000);
-
-app.listen(3000, () => {
-  console.log('🚀 Node API corriendo en http://localhost:3000');
-});
-
+// --- HUMEDAD ---
 app.get('/api/humedad/historico', (req, res) => {
   db.all(
     `SELECT * FROM humedad_log ORDER BY fecha DESC LIMIT 100`,
     [],
     (err, rows) => {
-      if (err) {
-        res.status(500).json({ error: err.message });
-      } else {
-        res.json(rows);
-      }
+      if (err) res.status(500).json({ error: err.message });
+      else res.json(rows);
     }
   );
 });
@@ -110,94 +146,51 @@ app.get('/api/humedad/sensores', (req, res) => {
     `SELECT DISTINCT sensor_id FROM humedad_log`,
     [],
     (err, rows) => {
-      if (err) {
-        res.status(500).json({ error: err.message });
-      } else {
-        res.json(rows);
-      }
+      if (err) res.status(500).json({ error: err.message });
+      else res.json(rows);
     }
   );
 });
 
 app.get('/api/humedad/ultimas', (req, res) => {
   db.all(
-    `
-    SELECT *
-    FROM humedad_log h
-    WHERE id IN (
-      SELECT MAX(id)
-      FROM humedad_log
-      GROUP BY sensor_id
-    )
-    ORDER BY sensor_id
-    `,
+    `SELECT *
+     FROM humedad_log
+     WHERE id IN (
+       SELECT MAX(id)
+       FROM humedad_log
+       GROUP BY sensor_id
+     )
+     ORDER BY sensor_id`,
     [],
     (err, rows) => {
-      if (err) {
-        res.status(500).json({ error: err.message });
-      } else {
-        res.json(rows);
-      }
+      if (err) res.status(500).json({ error: err.message });
+      else res.json(rows);
     }
   );
 });
 
 app.get('/api/humedad/max-hoy', (req, res) => {
-  db.all(
-    `
-    SELECT *
-    FROM humedad_log
-    WHERE DATE(fecha) = DATE('now')
-    ORDER BY humedad DESC
-    LIMIT 1
-    `,
+  db.get(
+    `SELECT MAX(humedad) AS humedad
+     FROM humedad_log
+     WHERE DATE(fecha) = DATE('now')`,
     [],
-    (err, rows) => {
-      if (err) {
-        res.status(500).json({ error: err.message });
-      } else {
-        res.json(rows);
-      }
+    (err, row) => {
+      if (err) res.status(500).json({ error: err.message });
+      else res.json(row);
     }
   );
 });
 
-function evaluarHumedadAutomatica() {
-  db.all(
-    `
-    SELECT humedad
-    FROM humedad_log
-    WHERE DATE(fecha) = DATE('now', 'localtime')
-    ORDER BY humedad DESC
-    LIMIT 1
-    `,
-    [],
-    (err, rows) => {
-      if (err || rows.length === 0) return;
-
-      const hum = rows[0].humedad;
-      console.log('Humedad máxima hoy:', hum);
-
-      if (hum > 70) {
-        axios.post(`${PYTHON_API}/onDesH`);
-      } else {
-        axios.post(`${PYTHON_API}/offDesH`);
-      }
-    }
-  );
-}
-
+// Promedios diarios
 app.get('/api/humedad/promedio/diario/semana', (req, res) => {
   db.all(
-    `
-    SELECT 
-      DATE(fecha) AS dia,
-      AVG(humedad) AS promedio
-    FROM humedad_log
-    WHERE fecha >= datetime('now', '-7 days')
-    GROUP BY DATE(fecha)
-    ORDER BY dia ASC
-    `,
+    `SELECT DATE(fecha) AS dia, AVG(humedad) AS promedio
+     FROM humedad_log
+     WHERE fecha >= datetime('now', '-7 days')
+     GROUP BY DATE(fecha)
+     ORDER BY dia ASC`,
     [],
     (err, rows) => {
       if (err) res.status(500).json(err);
@@ -208,15 +201,11 @@ app.get('/api/humedad/promedio/diario/semana', (req, res) => {
 
 app.get('/api/humedad/promedio/diario/mensual', (req, res) => {
   db.all(
-    `
-    SELECT
-    DATE(fecha) AS dia,
-    AVG(humedad) AS promedio_diario
-    FROM humedad_log
-    WHERE fecha >= datetime('now', '-30 days')
-    GROUP BY DATE(fecha)
-    ORDER BY dia ASC;
-    `,
+    `SELECT DATE(fecha) AS dia, AVG(humedad) AS promedio
+     FROM humedad_log
+     WHERE fecha >= datetime('now', '-30 days')
+     GROUP BY DATE(fecha)
+     ORDER BY dia ASC`,
     [],
     (err, rows) => {
       if (err) res.status(500).json(err);
@@ -225,13 +214,14 @@ app.get('/api/humedad/promedio/diario/mensual', (req, res) => {
   );
 });
 
-app.get('/api/conductividad/ultimo/', (req, res) => {
+// --- CONDUCTIVIDAD ---
+app.get('/api/conductividad/ultimo', (req, res) => {
   db.get(
     `SELECT *
      FROM conductividad_log
      ORDER BY fecha DESC
      LIMIT 1`,
-    [req.params.sensor_id],
+    [],
     (err, row) => {
       if (err) res.status(500).json({ error: err.message });
       else res.json(row);
@@ -252,7 +242,7 @@ app.get('/api/conductividad/maxHoy', (req, res) => {
   );
 });
 
-// Devuelve todas las medidas de las últimas 24h
+// Últimas 24h de humedad
 app.get('/api/humedad/ultimas24h', (req, res) => {
   db.all(
     `SELECT * 
@@ -267,6 +257,7 @@ app.get('/api/humedad/ultimas24h', (req, res) => {
   );
 });
 
+// Máxima humedad últimas 48h
 app.get('/api/humedad/max48h', (req, res) => {
   db.get(
     `SELECT MAX(humedad) AS humedad 
@@ -280,3 +271,35 @@ app.get('/api/humedad/max48h', (req, res) => {
   );
 });
 
+// --- AUTO CONTROL ---
+async function evaluarHumedadAutomatica() {
+  db.get(
+    `SELECT MAX(humedad) AS humedad
+     FROM humedad_log
+     WHERE DATE(fecha) = DATE('now', 'localtime')`,
+    [],
+    async (err, row) => {
+      if (err || !row) return;
+      const hum = row.humedad;
+      console.log('Humedad máxima hoy:', hum);
+
+      try {
+        if (hum > 70) {
+          await axios.post(`${PYTHON_API}/onDesH`, null, { timeout: 5000 });
+        } else {
+          await axios.post(`${PYTHON_API}/offDesH`, null, { timeout: 5000 });
+        }
+      } catch (err) {
+        console.error('No se pudo enviar comando al deshumidificador:', err.message);
+        // No se hace nada más, así el servidor sigue corriendo
+      }
+    }
+  );
+}
+
+
+// Ejecutar cada 5 segundos
+//setInterval(evaluarHumedadAutomatica, 5000);
+
+// --- LISTO ---
+app.listen(3000, () => console.log('🚀 Node API corriendo en http://localhost:3000'));

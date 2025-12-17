@@ -1,6 +1,7 @@
-const sqlite3 = require('sqlite3').verbose();
+// db.js
+import sqlite3 from 'sqlite3';
 
-const db = new sqlite3.Database('./iot.db');
+const db = new sqlite3.Database('datos.db');
 
 db.serialize(() => {
   db.run(`
@@ -21,4 +22,4 @@ db.serialize(() => {
   `);
 });
 
-module.exports = db;
+export default db; // ✅ Solo esto, nada de module.exports

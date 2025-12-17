@@ -10,7 +10,6 @@ BASE_URL = "http://172.21.84.91:5000"
 estado = {
     "conductividad": None,
     "humedad": None,
-    "tanque": None,
     "deshumidificador": None
 }
 
@@ -19,17 +18,22 @@ def get_estado():
     return jsonify(estado)
 
 def leer_sensor():
-    r = requests.get(f"{BASE_URL}/sensorC", timeout=3)
-    data = r.json()
-    estado["conductividad"] = data["conductividad"]
+    try:
+        r = requests.get(f"{BASE_URL}/sensorC", timeout=3)
+        data = r.json()
+        estado["conductividad"] = data.get("conductividad")
+    except Exception as e:
+        print("Error leyendo sensor:", e)
+        estado["conductividad"] = None
 
 def humedad():
-    r = requests.get(f"{BASE_URL}/esp", timeout=3)
-    estado["humedad"] = r.json()
+    try:
+        r = requests.get(f"{BASE_URL}/esp", timeout=3)
+        estado["humedad"] = r.json()
+    except Exception as e:
+        print("Error leyendo humedad:", e)
+        estado["humedad"] = None
 
-def tanque():
-    r = requests.get(f"{BASE_URL}/tanque", timeout=3)
-    estado["tanque"] = r.json()
 
 def desh_on():
     r = requests.post(f"{BASE_URL}/onDesH", timeout=3)
@@ -43,7 +47,7 @@ def loop():
     while True:
         leer_sensor()
         humedad()
-        tanque()
+        print(estado)
         time.sleep(5)
 
 if __name__ == "__main__":

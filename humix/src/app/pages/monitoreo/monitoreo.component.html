@@ -1,5 +1,7 @@
-<div *ngFor="let label of labels">
-  <label>{{ label }}</label>
+<div *ngFor="let m of ultimas" class="label">
+  Sensor {{ m.sensor_id }} →
+  Humedad: {{ m.humedad }} %
+  Temp: {{ m.temperatura }} °C
 </div>
 
-<label> Sensor Conductividad</label>
+<label> Sensor de conductividad → {{conductividad}}</label>

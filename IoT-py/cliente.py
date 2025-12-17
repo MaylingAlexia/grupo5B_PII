@@ -1,39 +1,51 @@
 import requests
 import time
+import threading
+from flask import Flask, jsonify
+
+app = Flask(__name__)
 
 BASE_URL = "http://172.21.84.91:5000"
+
+estado = {
+    "conductividad": None,
+    "humedad": None,
+    "tanque": None,
+    "deshumidificador": None
+}
+
+@app.route('/estado', methods=['GET'])
+def get_estado():
+    return jsonify(estado)
 
 def leer_sensor():
     r = requests.get(f"{BASE_URL}/sensorC", timeout=3)
     data = r.json()
-    print("Conductividad:", data["conductividad"])
-
-def desh_on():
-    r = requests.post(f"{BASE_URL}/onDesH", timeout=3)
-    print(r.json())
-
-def desh_off():
-    r = requests.post(f"{BASE_URL}/offDesH", timeout=3)
-    print(r.json())
+    estado["conductividad"] = data["conductividad"]
 
 def humedad():
     r = requests.get(f"{BASE_URL}/esp", timeout=3)
-    print(r.json())
+    estado["humedad"] = r.json()
 
 def tanque():
     r = requests.get(f"{BASE_URL}/tanque", timeout=3)
-    print(r.json())
+    estado["tanque"] = r.json()
 
-if __name__ == "__main__":
+def desh_on():
+    r = requests.post(f"{BASE_URL}/onDesH", timeout=3)
+    estado["deshumidificador"] = "on"
+
+def desh_off():
+    r = requests.post(f"{BASE_URL}/offDesH", timeout=3)
+    estado["deshumidificador"] = "off"
+
+def loop():
     while True:
         leer_sensor()
         humedad()
         tanque()
-
-        # ejemplo de control simple
-        if input("¿Prender deshumidificador? (s/n): ").lower() == "s":
-            desh_on()
-        else:
-            desh_off()
-
         time.sleep(5)
+
+if __name__ == "__main__":
+    threading.Thread(target=loop, daemon=True).start()
+    app.run(host="0.0.0.0", port=5000)

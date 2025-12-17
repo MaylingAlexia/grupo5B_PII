@@ -1,20 +1,24 @@
 <div>
   <label>
-    <input type="checkbox" disabled/>
+    <input type="checkbox" disabled />
     Ventilador
   </label>
 </div>
 
 <div>
   <label>
-    <input type="checkbox" disabled/>
+    <input type="checkbox" disabled />
     Luz
   </label>
 </div>
 
 <div>
   <label>
-    <input type="checkbox" />
+    <input
+      type="checkbox"
+      [(ngModel)]="deshumidificador"
+      (change)="toggleDeshumidificador()"
+    />
     Deshumidificador
   </label>
 </div>

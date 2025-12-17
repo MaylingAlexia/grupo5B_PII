@@ -1,5 +1,6 @@
 import { Component, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { Chart } from 'chart.js/auto';
+import { IotService } from 'src/app/services/iot.service';
 
 @Component({
   selector: 'app-grafico-linea',
@@ -10,45 +11,49 @@ export class GraficoLineaComponent implements AfterViewInit {
 
   @ViewChild('funcion') canvas!: ElementRef<HTMLCanvasElement>;
 
+  constructor(private iot: IotService) {}
+
   ngAfterViewInit() {
-    const ctx = this.canvas.nativeElement.getContext('2d');
 
-    const datos = [
-      { x: 1, y: 2 },
-      { x: 2, y: 3 },
-      { x: 3, y: 1 },
-      { x: 4, y: 4 },
-      { x: 5, y: 2 }
-    ];
+    this.iot.getPromedioMensual().subscribe(rows => {
 
-    new Chart(ctx!, {
-      type: 'line', // Cambiado de 'scatter' a 'line'
-      data: {
-        datasets: [
-          {
-            label: 'Mi función',
-            data: datos,
-            borderColor: 'rgba(86,69,146,0.85)',
-            backgroundColor: 'rgba(86,69,146,0.85)',
-            fill: false,
-            showLine: true,   // Conecta los puntos
-            pointRadius: 6,
-            tension: 0        // 0 = líneas rectas entre puntos
-          }
-        ]
-      },
-      options: {
-        scales: {
-          x: {
-            type: 'linear',
-            position: 'bottom',
-            title: { display: true, text: 'Eje X' }
-          },
-          y: {
-            title: { display: true, text: 'Eje Y' }
+      // eje X → día del mes
+      const datos = rows.map(r => ({
+        x: new Date(r.dia).getDate(),
+        y: r.promedio
+      }));
+
+      const ctx = this.canvas.nativeElement.getContext('2d');
+
+      new Chart(ctx!, {
+        type: 'line',
+        data: {
+          datasets: [
+            {
+              label: 'Humedad promedio mensual (%)',
+              data: datos,
+              borderColor: 'rgba(86,69,146,0.85)',
+              backgroundColor: 'rgba(86,69,146,0.85)',
+              fill: false,
+              pointRadius: 4,
+              tension: 0
+            }
+          ]
+        },
+        options: {
+          scales: {
+            x: {
+              type: 'linear',
+              title: { display: true, text: 'Día del mes' },
+              ticks: { stepSize: 1 }
+            },
+            y: {
+              title: { display: true, text: 'Humedad (%)' }
+            }
           }
         }
-      }
+      });
+
     });
   }
 }

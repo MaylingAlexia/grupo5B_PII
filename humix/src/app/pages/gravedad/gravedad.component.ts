@@ -6,5 +6,5 @@ import { Component } from '@angular/core';
   styleUrls: ['./gravedad.component.css']
 })
 export class GravedadComponent {
-
+  gravedad = "alta"
 }

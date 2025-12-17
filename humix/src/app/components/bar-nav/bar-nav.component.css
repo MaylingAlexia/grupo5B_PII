@@ -1,5 +1,17 @@
-:host {
-  display: block;
+.nav {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+
   height: 64px;
-  background: #564592;
+  background: #F3EDF7;
+}
+
+button {
+  border: none;
+  background: #ffffff;
+  color: #000;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
 }

@@ -6,5 +6,6 @@ import { Component } from '@angular/core';
   styleUrls: ['./monitoreo.component.css']
 })
 export class MonitoreoComponent {
+  labels = ['Sensor 1', 'Sensor 2', 'Sensor 3'];
 
 }

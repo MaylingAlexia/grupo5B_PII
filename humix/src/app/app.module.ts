@@ -11,6 +11,8 @@ import { GravedadComponent } from './pages/gravedad/gravedad.component';
 import { RecomendacionesComponent } from './pages/recomendaciones/recomendaciones.component';
 import { BarNavComponent } from './components/bar-nav/bar-nav.component';
 import { IndexComponent } from './pages/index/index.component';
+import { GraficoBarrasComponent } from './components/grafico-barras/grafico-barras.component';
+import { GraficoLineaComponent } from './components/grafico-linea/grafico-linea.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +23,9 @@ import { IndexComponent } from './pages/index/index.component';
     GravedadComponent,
     RecomendacionesComponent,
     BarNavComponent,
-    IndexComponent
+    IndexComponent,
+    GraficoBarrasComponent,
+    GraficoLineaComponent
   ],
   imports: [
     BrowserModule,

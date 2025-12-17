@@ -20,10 +20,15 @@ def humedad():
     r = requests.get(f"{BASE_URL}/esp", timeout=3)
     print(r.json())
 
+def tanque():
+    r = requests.get(f"{BASE_URL}/tanque", timeout=3)
+    print(r.json())
+
 if __name__ == "__main__":
     while True:
         leer_sensor()
         humedad()
+        tanque()
 
         # ejemplo de control simple
         if input("¿Prender deshumidificador? (s/n): ").lower() == "s":

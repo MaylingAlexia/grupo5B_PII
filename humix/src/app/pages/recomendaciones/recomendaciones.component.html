@@ -1,1 +1,11 @@
-<p>recomendaciones works!</p>
+<div [ngSwitch]="opcionSeleccionada">
+  <div *ngSwitchCase="'uno'">
+    <div *ngFor="let label of labelsUno">{{ label }}</div>
+  </div>
+  <div *ngSwitchCase="'dos'">
+    <div *ngFor="let label of labelsDos">{{ label }}</div>
+  </div>
+  <div *ngSwitchCase="'tres'">
+    <div *ngFor="let label of labelsTres">{{ label }}</div>
+  </div>
+</div>

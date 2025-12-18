@@ -157,8 +157,8 @@ app.get('/api/humedad/ultimas24h', (req, res) => {
 // Máxima humedad últimas 48h
 app.get('/api/humedad/max48h', (req, res) => {
   db.get(
-    `SELECT MAX(humedad) AS humedad 
-     FROM humedad_log 
+    `SELECT MAX(humedad) AS humedad
+     FROM humedad_log
      WHERE fecha >= datetime('now', '-48 hours')`,
     [],
     (err, row) => {

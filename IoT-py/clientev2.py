@@ -3,6 +3,8 @@ import time
 import threading
 from flask import Flask, jsonify
 import sqlite3
+import os
+
 
 app = Flask(__name__)
 
@@ -14,7 +16,11 @@ estado = {
     "deshumidificador": None
 }
 
-DB_PATH = '../backend/datos.db'
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+DB_PATH = os.path.abspath(
+    os.path.join(BASE_DIR, '..', 'backend', 'datos.db')
+)
 
 # Función para guardar datos en la DB
 def guardar_humedad_conductividad(humedad, temp, sensor_id, conductividad):
@@ -79,7 +85,9 @@ def loop():
         leer_humedad()
 
         # Guardar automáticamente en DB si hay datos
-        if estado["humedad"]:
+        print(estado["humedad"])
+
+        if estado["humedad"] != 0:
             guardar_humedad_conductividad(
                 estado["humedad"].get("hum"),
                 estado["humedad"].get("temp"),
@@ -88,6 +96,7 @@ def loop():
             )
 
         print("Estado actual:", estado)
+        print(DB_PATH)
         time.sleep(5)
 
 if __name__ == "__main__":

@@ -1,3 +1,10 @@
-<div *ngFor="let msg of mensajes" class="alerta">
-      {{ msg }}
+<h1 class="titulo-wrapper">Avisos</h1>
+<div class="avisos-container">
+  <hr class="divider" />
+  <ul>
+    <li *ngFor="let aviso of mensajes" class="aviso-card">
+      <span class="hora">[{{ aviso.hora }}]</span>
+      <span class="mensaje">{{ aviso.mensaje }}</span>
+    </li>
+  </ul>
 </div>

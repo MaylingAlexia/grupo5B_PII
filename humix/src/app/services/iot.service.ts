@@ -9,54 +9,73 @@ export class IotService {
 
   private API = 'http://localhost:3000/api';
 
-  constructor(private http: HttpClient,
+  constructor(
+    private http: HttpClient,
     private alertService: AlertaService
   ) {}
 
   getEstado() {
+    this.alertService.enviar('🔍 Consultando estado actual del sistema...');
     return this.http.get(`${this.API}/estado`);
   }
 
   setDeshumidificador(accion: 'on' | 'off') {
-    this.alertService.enviar(accion);
+    const mensaje = accion === 'on'
+      ? '💧 Deshumidificador ACTIVADO'
+      : '💤 Deshumidificador DESACTIVADO';
+    
+    this.alertService.enviar(mensaje);
+
     return this.http.post(`${this.API}/deshumidificador`, { accion });
   }
 
   getHistorico() {
-    return this.http.get<any[]>('http://localhost:3000/api/humedad/historico');
+    this.alertService.enviar('📊 Obteniendo historial de humedad...');
+    return this.http.get<any[]>(`${this.API}/humedad/historico`);
   }
 
   getSensoresH() {
-    return this.http.get<any[]>('http://localhost:3000/api/humedad/sensores');
+    this.alertService.enviar('🛰️ Consultando sensores disponibles...');
+    return this.http.get<any[]>(`${this.API}/humedad/sensores`);
   }
 
-  getLastMesure(){
-    return this.http.get<any[]>('http://localhost:3000/api/humedad/ultimas');
+  getLastMesure() {
+    this.alertService.enviar('⏱️ Obteniendo últimas mediciones de humedad...');
+    return this.http.get<any[]>(`${this.API}/humedad/ultimas`);
   }
 
-  getBiggest2Day(){
-    return this.http.get<any[]>('http://localhost:3000/api/humedad/max-hoy');
+  getBiggest2Day() {
+    this.alertService.enviar('📈 Calculando humedad máxima de las últimas 48h...');
+    return this.http.get<any[]>(`${this.API}/humedad/max-hoy`);
   }
 
-  getPromedioSemanal(){
-    return this.http.get<any[]>('http://localhost:3000/api/humedad/promedio/diario/semana');
+  getPromedioSemanal() {
+    this.alertService.enviar('📅 Calculando promedio semanal de humedad...');
+    return this.http.get<any[]>(`${this.API}/humedad/promedio/diario/semana`);
   }
 
-  getPromedioMensual(){
-    return this.http.get<any[]>('http://localhost:3000/api/humedad/promedio/diario/mensual');
+  getPromedioMensual() {
+    this.alertService.enviar('📅 Calculando promedio mensual de humedad...');
+    return this.http.get<any[]>(`${this.API}/humedad/promedio/diario/mensual`);
   }
 
   getUltimaConductividad() {
-    return this.http.get<any>('http://localhost:3000/api/conductividad/ultimo');
+    this.alertService.enviar('💡 Obteniendo última medición de conductividad...');
+    return this.http.get<any>(`${this.API}/conductividad/ultimo`);
   }
 
-  getMaxConductividadHoy(){
-    return this.http.get<any>('http://localhost:3000/api/conductividad/maxHoy');
+  getMaxConductividadHoy() {
+    this.alertService.enviar('⚡ Obteniendo máxima conductividad de hoy...');
+    return this.http.get<any>(`${this.API}/conductividad/maxHoy`);
   }
 
   getLogsUltimas24H() {
-  return this.http.get<any[]>('http://localhost:3000/api/humedad/ultimas24h');
-}
+    this.alertService.enviar('🕒 Cargando logs de humedad últimas 24h...');
+    return this.http.get<any[]>(`${this.API}/humedad/ultimas24h`);
+  }
 
-
+  enviarAlertaPersonalizada(msg: string) {
+    const mensaje = `⚠️ ALERTA: ${msg}`;
+    this.alertService.enviar(mensaje);
+  }
 }

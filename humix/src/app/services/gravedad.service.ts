@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { IotService } from './iot.service';
 import { AlertaService } from './alerta.service';
-import { Observable, forkJoin, of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
+import { catchError } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -35,12 +36,24 @@ export class GravedadService {
 
                 // 4️⃣ Calcular score y gravedad
                 let score = 0;
+
                 if (hum > 70) {
                   score += 2;
-                  this.iot.setDeshumidificador('on').subscribe();
+                  this.iot.setDeshumidificador('on')
+                    .pipe(catchError(err => {
+                      console.error('Error al encender deshumidificador', err);
+                      return of(null);
+                    }))
+                    .subscribe();
                 } else {
-                  this.iot.setDeshumidificador('off').subscribe();
+                  this.iot.setDeshumidificador('off')
+                    .pipe(catchError(err => {
+                      console.error('Error al apagar deshumidificador', err);
+                      return of(null);
+                    }))
+                    .subscribe();
                 }
+
                 if (cond > 300) score += 1;
                 if (horas_alta > 6) score += 2;
 
@@ -48,8 +61,21 @@ export class GravedadService {
                   score >= 4 ? 'alta' :
                   score >= 2 ? 'media' : 'baja';
 
-                // 5️⃣ Enviar alerta
-                this.alertService.enviar(`Score: ${score}, Gravedad: ${gravedad}`);
+                // 5️⃣ Enviar alerta con mensaje más amigable según gravedad
+                let mensaje = '';
+                switch (gravedad) {
+                  case 'alta':
+                    mensaje = `🔥 ALERTA: Humedad muy alta (${hum}%) y conductividad (${cond}) — Deshumidificador activado!`;
+                    break;
+                  case 'media':
+                    mensaje = `⚠️ Atención: Humedad moderada (${hum}%) y conductividad (${cond})`;
+                    break;
+                  case 'baja':
+                    mensaje = `✅ Todo en orden: Humedad (${hum}%), Conductividad (${cond}) baja`;
+                    break;
+                }
+
+                this.alertService.enviar(mensaje);
 
                 return { gravedad, score };
               })

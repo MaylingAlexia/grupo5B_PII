@@ -3,7 +3,8 @@ import { IotService } from 'src/app/services/iot.service';
 
 @Component({
   selector: 'app-control',
-  templateUrl: './control.component.html'
+  templateUrl: './control.component.html',
+  styleUrls: ['./control.component.css'],
 })
 export class ControlComponent {
 

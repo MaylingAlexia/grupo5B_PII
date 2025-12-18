@@ -1,0 +1,77 @@
+.avisos-container {
+  max-width: 400px;
+  margin: 20px auto;
+  padding: 10px;
+  background: #93A3F3;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.avisos-container h3 {
+  text-align: center;
+  margin-bottom: 12px;
+  color: #fff; /* Título en blanco */
+  background-color: #21f341; /* Fondo azul para que resalte */
+  padding: 8px 0;
+  border-radius: 8px 8px 0 0;
+  position: relative;
+}
+
+/* Línea divisoria debajo del título */
+.avisos-container h3::after {
+  content: "";
+  display: block;
+  height: 2px;
+  background-color: #21f341;
+  margin: 8px 0 0 0;
+  width: 100%;
+}
+
+.avisos-container ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.aviso-card {
+  display: flex;
+  align-items: center;
+  padding: 8px 10px;
+  margin-bottom: 6px;
+  border-radius: 8px;
+  background: #fff;
+  border-left: 4px solid #21f341;
+  transition: background 0.3s;
+}
+
+.aviso-card:hover {
+  background: #e3f2fd;
+}
+
+.hora {
+  font-weight: bold;
+  margin-right: 8px;
+  color: #555;
+  font-size: 0.9em;
+}
+
+.mensaje {
+  color: #333;
+}
+
+
+.titulo-wrapper {
+  padding: 14px 20px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+  margin-bottom: 16px;
+}
+
+.titulo-wrapper h1 {
+  margin: 0;
+  color: #ffffff;
+  font-size: 1.8rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}

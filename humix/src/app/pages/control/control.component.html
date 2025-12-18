@@ -1,21 +1,24 @@
-<div>
-  <label>
-    <input type="checkbox" disabled />
-    Ventilador
-  </label>
+<div class="titulo-wrapper">
+  <h1>Control</h1>
 </div>
+<div class="panel-dispositivos">
+  <div class="dispositivo" [class.on]="false">
+    <span class="icon">💨</span>
+    <span class="nombre">Ventilador</span>
+    <input type="checkbox" [checked]="false" disabled />
+  </div>
 
-<div>
-  <label>
-    <input type="checkbox" disabled />
-    Luz
-  </label>
+  <div class="dispositivo" [class.on]="false">
+    <span class="icon">💡</span>
+    <span class="nombre">Luz</span>
+    <input type="checkbox" [checked]="false" disabled />
+  </div>
+
+  <div class="dispositivo" [class.on]="deshumidificador">
+    <span class="icon">💧</span>
+    <span class="nombre">Deshumidificador</span>
+    <input type="checkbox" [(ngModel)]="deshumidificador"
+           [disabled]="loading"
+           (change)="toggleDeshumidificador()" />
+  </div>
 </div>
-
-<label>
-  Deshumidificador
-  <input type="checkbox" [(ngModel)]="deshumidificador"
-         [disabled]="loading"
-         (change)="toggleDeshumidificador()">
-</label>
-

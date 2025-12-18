@@ -2,64 +2,14 @@
 import express from 'express';
 import cors from 'cors';
 import axios from 'axios';
-import OpenAI from 'openai';
 import db from './db.js'; // recuerda agregar .js
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Configuración OpenAI
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
-});
 // IP de tu Raspberry
 const PYTHON_API = 'http://172.21.84.91:5000';
-
-// --- RUTAS ---
-
-// IA
-app.post('/api/ia', async (req, res) => {
-  try {
-    const { prompt } = req.body;
-    const response = await openai.createChatCompletion({
-      model: 'gpt-4',
-      messages: [{ role: 'user', content: prompt }]
-    });
-    const answer = response.data.choices[0].message?.content;
-    res.json({ answer });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// RUTA DE PRUEBA: inserta datos directamente en SQLite
-app.get('/api/test-insert', (req, res) => {
-  const humedad = { id: 1, hum: 53.0, temp: 25.2 };
-  const conductividad = 110;
-
-  db.run(
-    `INSERT INTO humedad_log (sensor_id, humedad, temperatura)
-     VALUES (?, ?, ?)`,
-    [parseInt(humedad.id), humedad.hum, humedad.temp],
-    function(err) {
-      if (err) console.error('Error insertando humedad:', err.message);
-      else console.log('Humedad insertada con id', this.lastID);
-    }
-  );
-
-  db.run(
-    `INSERT INTO conductividad_log (conductividad)
-     VALUES (?)`,
-    [conductividad],
-    function(err) {
-      if (err) console.error('Error insertando conductividad:', err.message);
-      else console.log('Conductividad insertada con id', this.lastID);
-    }
-  );
-
-  res.json({ ok: true, msg: 'Datos de prueba insertados' });
-});
 
 
 // Obtener estado desde Python y guardar en DB

@@ -1,6 +1,15 @@
+<div class="titulo-wrapper">
+<h1>Monitoreo</h1>
+</div>
+<div class="frame">
+
 <div *ngFor="let m of ultimas" class="label">
   Sensor {{ m.sensor_id }} →
   Humedad: {{ m.humedad }} %
 </div>
-
-<label> Sensor de conductividad → {{conductividad}}</label>
+</div>
+<div class="frame">
+<div class="label">
+  <label> Sensor de conductividad → {{conductividad}}</label>
+</div>
+</div>

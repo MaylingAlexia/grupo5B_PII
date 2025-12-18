@@ -1,11 +1,21 @@
-<div [ngSwitch]="opcionSeleccionada">
+<div class="titulo-wrapper">
+  <h1>Recomendaciones</h1>
+</div>
+
+<div class="frame">
+  <label>Gravedad: {{gravedad}}</label>
+</div>
+
+<div class="frame">
+  <div [ngSwitch]="opcionSeleccionada">
   <div *ngSwitchCase="'uno'">
-    <div *ngFor="let label of labelsUno">{{ label }}</div>
+    <div *ngFor="let label of labelsUno" class="tarjeta-label">{{ label }}</div>
   </div>
   <div *ngSwitchCase="'dos'">
-    <div *ngFor="let label of labelsDos">{{ label }}</div>
+    <div *ngFor="let label of labelsDos" class="tarjeta-label">{{ label }}</div>
   </div>
   <div *ngSwitchCase="'tres'">
-    <div *ngFor="let label of labelsTres">{{ label }}</div>
+    <div *ngFor="let label of labelsTres" class="tarjeta-label">{{ label }}</div>
   </div>
+</div>
 </div>

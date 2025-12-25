@@ -8,59 +8,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// IP de tu Raspberry
-const PYTHON_API = 'http://172.21.84.91:5000';
-
-
-// Obtener estado desde Python y guardar en DB
-app.get('/api/estado', async (req, res) => {
-  let data;
-
-  try {
-    // Intentamos obtener datos reales de Python
-    const response = await axios.get(`${PYTHON_API}/estado`, { timeout: 5000 });
-    data = response.data;
-    console.log('Datos reales de Python:', data);
-  } catch (err) {
-    // Si falla, usamos datos simulados
-    console.warn('No se pudo conectar a Python, usando datos simulados');
-    data = {
-      conductividad: 110,
-      humedad: { hum: 56.0, id: "1", temp: 25.2 },
-      deshumidificador: null
-    };
-  }
-
-  // Guardar humedad
-  if (data.humedad) {
-    db.run(
-      `INSERT INTO humedad_log (sensor_id, humedad, temperatura)
-       VALUES (?, ?, ?)`,
-      [parseInt(data.humedad.id), data.humedad.hum, data.humedad.temp],
-      function(err) {
-        if (err) console.error('Error insertando humedad:', err.message);
-        else console.log('Humedad insertada con id', this.lastID);
-      }
-    );
-  }
-
-  // Guardar conductividad
-  if (data.conductividad !== undefined) {
-    db.run(
-      `INSERT INTO conductividad_log (conductividad)
-       VALUES (?)`,
-      [data.conductividad],
-      function(err) {
-        if (err) console.error('Error insertando conductividad:', err.message);
-        else console.log('Conductividad insertada con id', this.lastID);
-      }
-    );
-  }
-
-  res.json(data);
-});
-
-
 
 
 // Comando deshumidificador
@@ -210,8 +157,8 @@ app.get('/api/humedad/ultimas24h', (req, res) => {
 // Máxima humedad últimas 48h
 app.get('/api/humedad/max48h', (req, res) => {
   db.get(
-    `SELECT MAX(humedad) AS humedad 
-     FROM humedad_log 
+    `SELECT MAX(humedad) AS humedad
+     FROM humedad_log
      WHERE fecha >= datetime('now', '-48 hours')`,
     [],
     (err, row) => {
@@ -224,9 +171,7 @@ app.get('/api/humedad/max48h', (req, res) => {
 // --- AUTO CONTROL ---
 async function evaluarHumedadAutomatica() {
   db.get(
-    `SELECT MAX(humedad) AS humedad
-     FROM humedad_log
-     WHERE DATE(fecha) = DATE('now', 'localtime')`,
+    `SELECT MAX(humedad) AS humedad FROM humedad_log WHERE DATE(fecha) = DATE('now', 'localtime')`,
     [],
     async (err, row) => {
       if (err || !row) return;
@@ -234,18 +179,15 @@ async function evaluarHumedadAutomatica() {
       console.log('Humedad máxima hoy:', hum);
 
       try {
-        if (hum > 70) {
-          await axios.post(`${PYTHON_API}/onDesH`, null, { timeout: 5000 });
-        } else {
-          await axios.post(`${PYTHON_API}/offDesH`, null, { timeout: 5000 });
-        }
+        if (hum > 70) await axios.post(`${PYTHON_API}/onDesH`);
+        else await axios.post(`${PYTHON_API}/offDesH`);
       } catch (err) {
         console.error('No se pudo enviar comando al deshumidificador:', err.message);
-        // No se hace nada más, así el servidor sigue corriendo
       }
     }
   );
 }
+
 
 
 // Ejecutar cada 5 segundos

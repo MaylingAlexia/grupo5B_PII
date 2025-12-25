@@ -20,8 +20,6 @@ export class MonitoreoComponent implements OnInit {
     this.humS.ultimasMedidas().subscribe(data => {
       this.ultimas = data;
       console.log(data);
-      
-      
     });
 
     this.iot.getUltimaConductividad().subscribe(data => {

@@ -10,7 +10,8 @@ REM Espera breve
 timeout /t 2 > nul
 
 REM Servir PWA Angular (build)
-start "Angular PWA" cmd /k npx http-server dist/humix
+start "Angular PWA" cmd /k npx http-server ..\humix\dist\humix -p 8080 -s
+
 
 REM Iniciar cliente Python
 timeout /t 2 > nul

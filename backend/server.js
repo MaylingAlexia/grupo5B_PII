@@ -1,8 +1,7 @@
-// server.js
 import express from 'express';
 import cors from 'cors';
 import axios from 'axios';
-import db from './db.js'; // recuerda agregar .js
+import db from './db.js';
 
 const app = express();
 app.use(cors());
@@ -188,10 +187,4 @@ async function evaluarHumedadAutomatica() {
   );
 }
 
-
-
-// Ejecutar cada 5 segundos
-//setInterval(evaluarHumedadAutomatica, 5000);
-
-// --- LISTO ---
 app.listen(3000, () => console.log('🚀 Node API corriendo en http://localhost:3000'));

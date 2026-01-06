@@ -42,7 +42,7 @@ void loop() {
 
     // Envío de datos reales
     if (client.connect(host, httpPort)) {
-      String json = "{\"temp\": " + String(t) + ", \"hum\": " + String(h) + "}";
+      String json = "{\"temp\": " + String(t) + ", \"hum\": " + String(h) + ", \"id\": 1"}";
 
       client.println("POST /data HTTP/1.1");
       client.print("Host: "); client.println(host);

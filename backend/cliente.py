@@ -78,13 +78,11 @@ def desh_off():
     except Exception as e:
         print("Error apagando deshumidificador:", e)
 
-# Loop principal de lectura y guardado
 def loop():
     while True:
         leer_sensor()
         leer_humedad()
 
-        # Guardar automáticamente en DB si hay datos
         print(estado["humedad"])
 
         if estado["humedad"] != 0:
@@ -100,8 +98,6 @@ def loop():
         time.sleep(5)
 
 if __name__ == "__main__":
-    # Hilo que corre el loop de lectura/guardado
     threading.Thread(target=loop, daemon=True).start()
 
-    # Flask solo sirve para exponer el estado
     app.run(host="0.0.0.0", port=5000)
